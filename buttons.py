@@ -16,6 +16,7 @@
 import vars, target
 button_page, button_enter = target.init_buttons()
 
+# two private variables
 button_page_press_count = 0
 button_enter_press_count = 0
 
@@ -23,19 +24,19 @@ def check(t):
     global button_page_press_count
     global button_enter_press_count
     if button_page.value() == 0:
-        if button_page_press_count <=20:   # dead time is 20*5 = 100ms = 0.1s
+        if button_page_press_count <=20:    # dead time is 20*5 = 100ms = 0.1s
             button_page_press_count += 1
         else:
             button_page_press_count = 0
-            vars.button_page = "pressed"
-            print('button_page tiggered', vars.button_page)
-            
+            vars.button_page = "pressed"        
     else:
         button_page_press_count = 0
+
     if button_enter.value() == 0:
-        if button_enter_press_count <=50:
+        if button_enter_press_count <=20:   # dead time is 20*5 = 100ms = 0.1s
             button_enter_press_count += 1
         else:
             button_enter_press_count = 0
             vars.button_enter = "pressed"
-            print('button_enter triggered', vars.button_enter)
+    else:
+        button_enter_press_count = 0

@@ -13,20 +13,19 @@
 
 # You should have received a copy of the GNU Affero General Public License
 # along with flowshutter.  If not, see <https://www.gnu.org/licenses/>.
-from machine import Timer
-import crsf, vars, sony_multiport,ui,settings
-import uasyncio as asyncio
+import target, vars
 
-settings.read()
+adc1, adc2 = target.init_adc()
 
-timer0 = Timer(0) # 200Hz update rate
-timer0.init(period=5, mode=Timer.PERIODIC, callback=ui.update)
+adc_read_time_count = 0
 
-timer1 = Timer(1) # 200Hz CRSF sender
-timer1.init(period=5, mode=Timer.PERIODIC, callback=crsf.send_packet)
-
-if vars.camera_protocol == "Sony MTP":
-    camera_uart_handler = sony_multiport.uart_handler()
-    loop = asyncio.get_event_loop()
-    loop.create_task(camera_uart_handler)
-    loop.run_forever()
+def read_vol():
+    global adc_read_time_count
+    adc_read_time_count += 5
+    if adc_read_time_count >= 50:
+        # read voltage every 50ms
+        adc_read_time_count = 0
+        if adc1.read() != 0:
+            vars.vol = (vars.vol + adc1.read() * 3.3 / 2048)/2
+        else:
+            vars.vol = (vars.vol + adc2.read() * 3.3 / 4096)/2
